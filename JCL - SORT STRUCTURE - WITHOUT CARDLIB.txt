@@ -22,7 +22,7 @@
 //*             B) TRAILER = Build a new trailer
 //*                          Counting lines (Including header+trailer).  
 //*-------------------------------------------------------------------*
-//SRT1GSA      EXEC  PGM=SORT
+//SORT01       EXEC  PGM=SORT
 //SYSOUT       DD    SYSOUT=*
 //SORTIN       DD DSN=DS.ARQIN.DYYYYMMDD.SS000101,
 //             DISP=SHR
