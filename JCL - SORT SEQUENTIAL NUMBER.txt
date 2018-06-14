@@ -1,0 +1,30 @@
+//JOBSRT      JOB 'SORT SEQUENTIAL NUMBER',
+//            ROS.MORALE,REGION=0M,MSGCLASS=R,
+//            COND=((8,EQ),(12,EQ),(16,EQ),(888,EQ)),
+//            CLASS=A
+//*-------------------------------------------------------------------*
+//*        FILE SCRATCH
+//*-------------------------------------------------------------------*
+//SYS000   EXEC PGM=SYS000,PARM=SYSIN
+//SYSPRINT DD   SYSOUT=*
+//SYSIN    DD   *
+   DELETE  DS.ARQIN.DYYYYMMDD.SS000101
+/*
+//*-------------------------------------------------------------------*
+//*   Sort file (ARQIN):
+//*   1. SORT FIELDS=COPY = Copy lines in ARQOUT;
+//*   2. INREC FIELDS (SEQNUM) = Renumber sequencial numbers.
+//*-------------------------------------------------------------------*
+//SRT1GSA      EXEC  PGM=SORT
+//SYSOUT       DD    SYSOUT=*
+//SORTIN       DD DSN=DS.ARQIN.DYYYYMMDD.SS000101,
+//             DISP=SHR
+//SORTOUT      DD DSN=DS.ARQOUT.DYYYYMMDD.SS000101,
+//             DISP=(,CATLG),
+//             LRECL=14,RECFM=FB,DSORG=PS,
+//             AVGREC=K,SPACE=(14,(10,1),RLSE)
+//SYSIN    DD *
+   SORT FIELDS=COPY                
+    INREC FIELDS=(001:001,010,     
+                  013:SEQNUM,04,BI)
+//*-------------------------------------------------------------------*
