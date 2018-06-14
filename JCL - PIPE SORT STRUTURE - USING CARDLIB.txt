@@ -1,0 +1,60 @@
+//*--------------------------------------------------------------------*
+//*           PIPE SORT JCL STRUCTURE                                  *
+//*--------------------------------------------------------------------*
+//*--------------------------------------------------------------------*
+//*           FILES SCRATCH                                            *
+//*--------------------------------------------------------------------*
+//SYS000A     EXEC PGM=SYS000,                     *** RESTART POINT ***
+//            PARM=('DS.ARQOUTA.DYYYYMMDD.SS000101')
+//SYS000B     EXEC PGM=SYS000,
+//            PARM=('DS.ARQOUTB.DYYYYMMDD.SS000101')
+//SYS000C     EXEC PGM=SYS000,
+//            PARM=('DS.ARQOUTC.DYYYYMMDD.SS000101')
+//*-------------------------------------------------------------------*
+//*           PIPE SORT CONTROL                                       *
+//*-------------------------------------------------------------------*
+//CTRLPIPE    EXEC PGM=IEBGENER
+//SYSPRINT    DD SYSOUT=*
+//SYSUT1      DD DSN=&CARDLIB(CARDPIPE),DISP=SHR
+//SYSUT2      DD DSN=&&CTRLPIPE,UNIT=VIO,DISP=(,PASS),
+//            LRECL=80,RECFM=FB,DSORG=PS,SPACE=(TRK,1)
+//*--------------------------------------------------------------------*
+//PIPE01      EXEC PGM=PIPESORT
+//PIPESORT    DD DSN=&&CTRLPIPE,DISP=(OLD,DELETE)
+//*-------------------------------------------------------------------*
+//*           FILE ARQINA SORT
+//*-------------------------------------------------------------------*
+//SYSOUTA     DD SYSOUT=*
+//SRTAIN      DD DSN=DS.ARQINA.DYYYYMMDD.SS000101,DISP=SHR
+//SRTAOUT     DD DSN=DS.ARQOUTA.DYYYYMMDD.SS000101,
+//            DISP=(,CATLG),LRECL=7,RECFM=FB,DSORG=PS,
+//            AVGREC=K,SPACE=(7,(10,1),RLSE)
+//SRTACNTL    DD DSN=&CARDLIB(CARDSRTA),DISP=SHR
+//*-------------------------------------------------------------------*
+//*           FILE ARQINB SORT
+//*-------------------------------------------------------------------*
+//SYSOUTB     DD SYSOUT=*
+//SRTBIN      DD DSN=DS.ARQINB.DYYYYMMDD.SS000101,DISP=SHR
+//SRTBOUT     DD DSN=DS.ARQOUTB.DYYYYMMDD.SS000101,
+//            DISP=(,CATLG),LRECL=11,RECFM=FB,DSORG=PS,
+//            AVGREC=K,SPACE=(11,(100,10),RLSE)
+//SRTBCNTL    DD DSN=&CARDLIB(CARDSRTB),DISP=SHR
+//*-------------------------------------------------------------------*
+//*           FILE ARQINC SORT
+//*-------------------------------------------------------------------*
+//SYSOUTC     DD SYSOUT=*
+//SRTCIN      DD DSN=DS.ARQINC.DYYYYMMDD.SS000101,DISP=SHR
+//SRTCOUT     DD DSN=DS.ARQOUTC.DYYYYMMDD.SS000101,
+//            DISP=(,CATLG),LRECL=19,RECFM=FB,DSORG=PS,
+//            AVGREC=K,SPACE=(19,(1000,100),RLSE)
+//SRTCCNTL    DD DSN=&CARDLIB(CARDSRTC),DISP=SHR
+//*-------------------------------------------------------------------*
+
+//*******************************************************************//
+
+//*-------------------------------------------------------------------*
+//*           CARDLIB (CARDPIPE)
+//*-------------------------------------------------------------------*
+1110
+//*-------------------------------------------------------------------*
+

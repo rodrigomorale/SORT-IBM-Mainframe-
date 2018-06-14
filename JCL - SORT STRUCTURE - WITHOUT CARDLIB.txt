@@ -1,0 +1,43 @@
+//JOBSRT      JOB 'SORT BASIC STRUCTURE',
+//            ROS.MORALE,REGION=0M,MSGCLASS=R,
+//            COND=((8,EQ),(12,EQ),(16,EQ),(888,EQ)),
+//            CLASS=A
+//*-------------------------------------------------------------------*
+//*        FILE SCRATCH
+//*-------------------------------------------------------------------*
+//SYS000   EXEC PGM=SYS000,PARM=SYSIN
+//SYSPRINT DD   SYSOUT=*
+//SYSIN    DD   *
+   DELETE  DS.ARQIN.DYYYYMMDD.SS000101
+/*
+//*-------------------------------------------------------------------*
+//*   Sort file (ARQIN):
+//*   1. INCLUDE COND = Exclude lines where position 1 to 3 are equal:
+//*                     'HDR' or 'TRL';
+//*   2. SORT FIELDS=COPY = Copy other lines in ARQOUT;
+//*   3. OUTREC FIELDS = Change positions to Display with 9 and 5
+//*                      positions respectively;
+//*   4. OUTFIL FNAMES=SORTOUT,REMOVECC:
+//*             A) HEADER  = Build a new header;
+//*             B) TRAILER = Build a new trailer
+//*                          Counting lines (Including header+trailer).  
+//*-------------------------------------------------------------------*
+//SRT1GSA      EXEC  PGM=SORT
+//SYSOUT       DD    SYSOUT=*
+//SORTIN       DD DSN=DS.ARQIN.DYYYYMMDD.SS000101,
+//             DISP=SHR
+//SORTOUT      DD DSN=DS.ARQOUT.DYYYYMMDD.SS000101,
+//             DISP=(,CATLG),
+//             LRECL=14,RECFM=FB,DSORG=PS,
+//             AVGREC=K,SPACE=(14,(10,1),RLSE)
+//SYSIN    DD *
+   INCLUDE COND=(001,003,CH,NE,C'HDR',AND,001,003,CH,NE,C'TRL')
+   SORT FIELDS=COPY
+   OUTREC FIELDS=(001:001,005,PD,EDIT=(TTTTTTTTT),
+                  010:006,003,PD,EDIT=(TTTTT))
+       OUTFIL FNAMES=SORTOUT,REMOVECC,
+             HEADER1=(001:C'HDR',
+                      004:C'ARQOUT',5X),
+            TRAILER1=(001:C'TRL',
+                      COUNT+2=(TO=ZD,LENGTH=11)
+//*-------------------------------------------------------------------*
