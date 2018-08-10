@@ -1,0 +1,77 @@
+//JOBSIS      JOB 'JOIN KEYS',
+//            ROS.MORALE.RODRIGO,REGION=0M,MSGCLASS=R,
+//            COND=((8,EQ),(12,EQ),(16,EQ),(888,EQ)),
+//            CLASS=A
+//*-------------------------------------------------------------------*
+//SYS000   EXEC PGM=SYS000,PARM=SYSIN
+//SYSPRINT DD   SYSOUT=*
+//SYSIN    DD   *
+    DELETE   DST.SIS.SISF002B.D180405.SS000101
+    DELETE   DST.SIS.SISF002C.D180405.SS000101
+    DELETE   DST.SIS.SISFMST.D180405.SS000104
+/*
+//*-------------------------------------------------------------------*
+//*   File Sort:
+//*   1. Sort Ascending:
+//*      Sort ascending columns 1 to 4 (binary) + columns 5 to 8 (Binary)
+//*-------------------------------------------------------------------*
+//SRT1SIS      EXEC  PGM=SORT
+//SYSOUT       DD    SYSOUT=*
+//SORTIN       DD DSN=DST.SIS.SISF002A.D180405.SS000101,
+//             DISP=SHR
+//SORTOUT      DD DSN=DST.SIS.SISF002B.D180405.SS000101,
+//             DISP=(,CATLG),
+//             LRECL=16,RECFM=FB,DSORG=PS,
+//             AVGREC=K,SPACE=(16,(1000,10),RLSE)
+//SYSIN    DD *
+   SORT FIELDS=(1,4,BI,A,5,4,BI,A)
+//*-------------------------------------------------------------------*
+//*   File Sort:
+//*   1. Include Cond:
+//*      Column 185 and 186 (2 positions), binary, equal zero;
+//*   2. Inrec:
+//*      Select column 1 to 4 (4 pos) and column 181 to 184 (4 pos);
+//*   3. Sort Ascending:
+//*      Sort ascending columns 1 to 4 (binary) + columns 5 to 8 (Binary)
+//*-------------------------------------------------------------------*
+//SRT2SIS      EXEC  PGM=SORT
+//SYSOUT       DD    SYSOUT=*
+//SORTIN       DD DSN=DSP.MST.MSTF500E.D180404.SS000124,
+//             DISP=SHR
+//SORTOUT      DD DSN=DST.SIS.SISFMST.D180405.SS000104,
+//             DISP=(,CATLG),
+//             LRECL=8,RECFM=FB,DSORG=PS,
+//             AVGREC=K,SPACE=(8,(1000,10),RLSE)
+//SYSIN    DD *
+   INCLUDE COND=(185,2,BI,EQ,0)
+   INREC FIELDS=(001:001,004,
+                 005:181,004)
+   SORT FIELDS=(1,4,BI,A,5,4,BI,A)
+//*-------------------------------------------------------------------*
+//*   File Sort:
+//*   1. Join Keys: Same value (OPTION EQUALS ***).
+//*      Select columns 1 to 4 (Ascending) from file SRTSIS
+//*      Select columns 5 to 8 (Ascending) from file SRTMST
+//*   2. Reformat Fields: Select files coumns (From join).
+//*      Select from SRTMST columns 1 to 4;
+//*      Select from SRTSIS columns 5 to 12.
+//*   3. Sort Ascending:
+//*      Sort ascending columns 1 to 4 (binary) + columns 5 to 8 (Binary)
+//*-------------------------------------------------------------------*
+//SRT3SIS      EXEC  PGM=SORT
+//SYSOUT       DD    SYSOUT=*
+//SRTSIS       DD DSN=DST.SIS.SISF002B.D180405.SS000101,
+//             DISP=SHR
+//SRTMST       DD DSN=DST.SIS.SISFMST.D180405.SS000104,
+//             DISP=SHR
+//SORTOUT      DD DSN=DST.SIS.SISF002C.D180405.SS000101,
+//             DISP=(,CATLG),
+//             LRECL=16,RECFM=FB,DSORG=PS,
+//             AVGREC=K,SPACE=(16,(1000,10),RLSE)
+//SYSIN    DD *
+   JOINKEYS F1=SRTSIS,FIELDS=(1,4,A)
+   JOINKEYS F2=SRTMST,FIELDS=(5,4,A)
+   REFORMAT FIELDS=(F2:1,4,F1:5,12)
+   OPTION EQUALS
+   SORT FIELDS=(1,4,BI,A,5,4,BI,A)
+//*-------------------------------------------------------------------*
