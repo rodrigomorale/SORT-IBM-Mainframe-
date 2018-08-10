@@ -1,0 +1,11 @@
+  INCLUDE COND=((001,001,PD,EQ,0,OR,     /* (VARIABLE 1 = 0 - HEADER
+                 001,001,PD,EQ,1),AND,   /*  VARIABLE 1 = 1 - TYPE 1) AND
+                (013,002,PD,LE,990,OR,   /* (VARIABLE 3 LESS EQ 990   OR
+                 013,002,PD,GE,999),AND, /*  VARIABLE 3 GT EQ   999)  AND
+                 087,001,PD,NE,1,AND,    /* (VARIABLE 4 NOT EQUAL 1)  AND
+                (090,001,PD,NE,2,AND,    /* (VARIABLE 5 NOT EQUAL 2   OR
+                 090,001,PD,NE,4,AND,    /* (VARIABLE 5 NOT EQUAL 4   OR
+                 090,001,PD,NE,8,AND,    /* (VARIABLE 5 NOT EQUAL 8   OR
+                 090,001,PD,NE,9))       /* (VARIABLE 5 NOT EQUAL 9)
+   SORT FIELDS=(001,001,PD,A,            /* VARIABLE 1 ASCENDING 
+                112,020,CH,A)            /* VARIABLE 6 ASCENDING
